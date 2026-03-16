@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="TraceLogo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trace</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <!-- Heroicons -->
+  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.3/dist/heroicons.min.js"></script>
+  <!-- Supabase (reset-password page only) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0f0f0f;
+      --bg2:          #171717;
+      --text:         #ffffff;
+      --muted:        #a1a1aa;
+      --accent:       #6366f1;
+      --accent-light: #818cf8;
+      --border:       rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    #root { min-height: 100vh; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50%       { transform: translateY(-12px) rotate(-2deg); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes progressBar {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+
+    .animate-fade-up { animation: fadeUp 0.7s ease forwards; }
+    .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
+    .animate-float   { animation: float 5s ease-in-out infinite; }
+
+    .delay-1 { animation-delay: 0.10s; opacity: 0; }
+    .delay-2 { animation-delay: 0.22s; opacity: 0; }
+    .delay-3 { animation-delay: 0.34s; opacity: 0; }
+    .delay-4 { animation-delay: 0.46s; opacity: 0; }
+    .delay-5 { animation-delay: 0.58s; opacity: 0; }
+    .delay-6 { animation-delay: 0.70s; opacity: 0; }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.35;
+    }
+
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+// ─── Supabase config ─────────────────────────────────────────────
+// Replace these with your actual Supabase project values
+const SUPABASE_URL    = "https://dhmzjuceuamjvzosdgrx.supabase.co";
+const SUPABASE_ANON   = "sb_publishable_vPluiRRr1l797J2AkfplXg_bWxPcdq4";
+
+// ─── Heroicons (outline, 24px) ────────────────────────────────────
+// Using raw SVG paths from Heroicons v2 — no build step needed.
+const HI = (path, size = 16) => () => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    {path}
+  </svg>
+);
+
+const Icons = {
+  // BoltIcon
+  Bolt: HI(<path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/>, 14),
+  // SparklesIcon
+  Sparkle: HI(<path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"/>, 14),
+  // Apple (kept as brand SVG — Heroicons doesn't include it)
+  Apple: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+    </svg>
+  ),
+  // EnvelopeIcon
+  Mail: HI(<path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>, 14),
+  // QuestionMarkCircleIcon
+  Support: HI(<><path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></>, 14),
+  // LockClosedIcon
+  Lock: HI(<path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>),
+  // EyeSlashIcon
+  EyeOff: HI(<><path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></>),
+  // EyeIcon
+  Eye: HI(<><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></>),
+  // CheckCircleIcon (large)
+  CheckCircle: HI(<path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>, 48),
+  // ExclamationCircleIcon (large)
+  AlertCircle: HI(<><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></>, 48),
+  // ChevronTriangleUpDown / used for mountain feel — MapPinIcon
+  Mountain: HI(<path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>, 14),
+};
+
+// ─── Phone mockup screens ─────────────────────────────────────────
+const screens = [
+  {
+    bg: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+    accent: '#6366f1', label: 'Dashboard',
+    items: [
+      { w:'60%', h:10, top:18, left:18, opacity:1 },
+      { w:'40%', h:8,  top:36, left:18, opacity:0.5 },
+      { w:'85%', h:56, top:60, left:'7.5%', opacity:1, card:true, accent:'#6366f1' },
+      { w:'38%', h:44, top:130, left:18,   opacity:1, card:true, accent:'#22d3ee' },
+      { w:'38%', h:44, top:130, right:18,  opacity:1, card:true, accent:'#a78bfa' },
+    ]
+  },
+  {
+    bg: 'linear-gradient(145deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+    accent: '#22d3ee', label: 'Analytics',
+    items: [
+      { w:'55%', h:10,  top:18,  left:18,   opacity:1 },
+      { w:'80%', h:100, top:44,  left:'10%', opacity:1, card:true, accent:'#22d3ee', chart:true },
+      { w:'80%', h:36,  top:158, left:'10%', opacity:1, card:true, accent:'#6366f1' },
+      { w:'80%', h:36,  top:204, left:'10%', opacity:1, card:true, accent:'#f59e0b' },
+    ]
+  },
+  {
+    bg: 'linear-gradient(145deg, #1a0533 0%, #2d1b69 50%, #11052c 100%)',
+    accent: '#a78bfa', label: 'Routes',
+    items: [
+      { w:'45%', h:10,  top:18, left:18,   opacity:1 },
+      { w:'85%', h:180, top:44, left:'7.5%', opacity:1, card:true, accent:'#a78bfa', list:true },
+    ]
+  }
+];
+
+function PhoneMockup({ screen = 0 }) {
+  const s = screens[screen];
+  return (
+    <div style={{
+      width:220, height:460, borderRadius:38,
+      background:'#111',
+      border:'2px solid rgba(255,255,255,0.12)',
+      boxShadow:`0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), 0 0 80px ${s.accent}22`,
+      position:'relative', overflow:'hidden', flexShrink:0,
+    }}>
+      <div style={{ position:'absolute', inset:2, borderRadius:36, background:s.bg, overflow:'hidden' }}>
+        {/* Status bar */}
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 18px 6px', fontSize:9, color:'rgba(255,255,255,0.6)' }}>
+          <span>9:41</span>
+          <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+            <div style={{ width:12, height:6, border:'1px solid rgba(255,255,255,0.5)', borderRadius:2, position:'relative' }}>
+              <div style={{ position:'absolute', inset:'1px', right:'3px', background:'rgba(255,255,255,0.7)', borderRadius:1 }}/>
+            </div>
+          </div>
+        </div>
+        {s.items.map((item, i) => (
+          <div key={i} style={{
+            position:'absolute',
+            width:item.w, height:item.h,
+            top:item.top,
+            left:item.left !== undefined ? item.left : 'auto',
+            right:item.right !== undefined ? item.right : 'auto',
+            borderRadius:item.card ? 14 : 6,
+            background:item.card
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))'
+              : `rgba(255,255,255,${item.opacity * 0.7})`,
+            border:item.card ? '1px solid rgba(255,255,255,0.08)' : 'none',
+            overflow:'hidden',
+          }}>
+            {item.card && item.accent && (
+              <div style={{ position:'absolute', top:10, left:10, width:28, height:28, borderRadius:8, background:`${item.accent}33`, border:`1px solid ${item.accent}55` }}/>
+            )}
+            {item.chart && (
+              <div style={{ position:'absolute', bottom:10, left:10, right:10, display:'flex', alignItems:'flex-end', gap:4, height:50 }}>
+                {[0.4,0.7,0.5,0.9,0.6,0.8,1,0.7].map((h, j) => (
+                  <div key={j} style={{ flex:1, borderRadius:'3px 3px 0 0', height:`${h*100}%`, background: j===6 ? s.accent : `${s.accent}44` }}/>
+                ))}
+              </div>
+            )}
+            {item.list && (
+              <div style={{ padding:'44px 14px 14px', display:'flex', flexDirection:'column', gap:10 }}>
+                {[1,2,3,4].map(j => (
+                  <div key={j} style={{ display:'flex', alignItems:'center', gap:10 }}>
+                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(255,255,255,0.08)', flexShrink:0 }}/>
+                    <div style={{ flex:1 }}>
+                      <div style={{ height:7, background:'rgba(255,255,255,0.4)', borderRadius:4, width:`${60+j*10}%`, marginBottom:4 }}/>
+                      <div style={{ height:5, background:'rgba(255,255,255,0.15)', borderRadius:4, width:'50%' }}/>
+                    </div>
+                    <div style={{ width:16, height:16, borderRadius:4, background:'rgba(255,255,255,0.05)' }}/>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      {/* Notch */}
+      <div style={{ position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', width:90, height:28, background:'#111', borderRadius:'0 0 20px 20px', zIndex:10 }}/>
+      {/* Home indicator */}
+      <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', width:80, height:4, borderRadius:2, background:'rgba(255,255,255,0.25)', zIndex:10 }}/>
+    </div>
+  );
+}
+
+// ─── Nav ──────────────────────────────────────────────────────────
+function Nav({ page, setPage }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  const isHidden = page === 'reset-password';
+  if (isHidden) return null;
+
+  return (
+    <nav style={{
+      position:'fixed', top:0, left:0, right:0, zIndex:1000,
+      padding:'0 clamp(20px,5vw,80px)', height:60,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      background: scrolled ? 'rgba(15,15,15,0.92)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(20px)' : 'none',
+      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+      transition:'background 0.4s ease, border-color 0.4s ease',
+    }}>
+      <button onClick={() => setPage('home')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:10 }}>
+        <img src="TraceLogo.png" alt="Trace logo"
+          style={{ width:30, height:30, borderRadius:8, objectFit:'cover', boxShadow:'0 4px 14px rgba(99,102,241,0.3)' }}
+          onError={e => {
+            // fallback to text logo if image missing
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+        <div style={{
+          display:'none', width:30, height:30, borderRadius:8,
+          background:'linear-gradient(135deg, #6366f1, #818cf8)',
+          alignItems:'center', justifyContent:'center',
+          fontSize:14, fontWeight:600, color:'#fff',
+          fontFamily:'DM Serif Display, serif',
+          boxShadow:'0 4px 14px rgba(99,102,241,0.4)',
+        }}>T</div>
+        <span style={{ fontFamily:'DM Serif Display, serif', fontSize:18, color:'var(--text)', letterSpacing:'-0.01em' }}>Trace</span>
+      </button>
+
+      <div style={{ display:'flex', gap:32, alignItems:'center' }}>
+        {['about','privacy'].map(p => (
+          <button key={p} onClick={() => setPage(p)} style={{
+            background:'none', border:'none', cursor:'pointer',
+            color: page === p ? 'var(--text)' : 'var(--muted)',
+            fontSize:13, fontFamily:'DM Sans, sans-serif', fontWeight:400,
+            letterSpacing:'0.02em', textTransform:'capitalize',
+            transition:'color 0.2s', padding:'4px 0',
+            borderBottom: page === p ? '1px solid var(--accent)' : '1px solid transparent',
+          }}>{p}</button>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+// ─── Landing ──────────────────────────────────────────────────────
+function Landing({ setPage }) {
+  const [activeScreen, setActiveScreen] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setActiveScreen(s => (s+1) % screens.length), 3000);
+    return () => clearInterval(t);
+  }, []);
+
+  const features = [
+    { Icon: Icons.Bolt,     text: 'Lightning-fast interface with zero latency' },
+    { Icon: Icons.Sparkle,  text: 'Clean, minimal design that gets out of your way' },
+    { Icon: Icons.Mountain, text: 'Built exclusively for iOS — native and beautiful' },
+  ];
+
+  return (
+    <div style={{ minHeight:'100vh', paddingTop:60 }}>
+      <section style={{
+        minHeight:'calc(100vh - 60px)',
+        display:'flex', alignItems:'center',
+        padding:'clamp(40px,8vh,100px) clamp(20px,5vw,80px)',
+        position:'relative', overflow:'hidden',
+      }}>
+        {/* Glows */}
+        <div style={{ position:'absolute', top:'10%', right:'5%', width:'50vw', height:'60vh', background:'radial-gradient(ellipse at center, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents:'none' }}/>
+        <div style={{ position:'absolute', bottom:'10%', left:'5%', width:'30vw', height:'30vh', background:'radial-gradient(ellipse at center, rgba(129,140,248,0.06) 0%, transparent 70%)', pointerEvents:'none' }}/>
+
+        <div style={{ display:'flex', alignItems:'center', gap:'clamp(40px,6vw,100px)', width:'100%', maxWidth:1100, margin:'0 auto', flexWrap:'wrap' }}>
+          {/* Left */}
+          <div style={{ flex:'1 1 340px', minWidth:0 }}>
+            {/* Badge */}
+            <div className="animate-fade-up delay-1" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:100, padding:'5px 14px', marginBottom:28 }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:'var(--accent)', animation:'pulse-dot 2s ease-in-out infinite' }}/>
+              <span style={{ fontSize:11, color:'var(--accent-light)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:500 }}>Now on the App Store</span>
+            </div>
+
+            <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(38px,5.5vw,72px)', lineHeight:1.05, letterSpacing:'-0.03em', color:'var(--text)', marginBottom:20 }}>
+              When Stats<br/>
+              <span style={{ background:'linear-gradient(90deg, #a78bfa, var(--accent-light), var(--accent))', backgroundSize:'200% auto', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', animation:'shimmer 6s linear infinite reverse' }}>
+                Meet Snow.
+              </span>
+            </h1>
+
+            <p className="animate-fade-up delay-3" style={{ fontSize:'clamp(15px,1.8vw,17px)', color:'var(--muted)', lineHeight:1.7, maxWidth:420, marginBottom:32 }}>
+              Track, Analyze, Trace. Built exclusively for iPhone, designed around how you ski.
+            </p>
+
+            {/* Features */}
+            <ul className="animate-fade-up delay-4" style={{ listStyle:'none', marginBottom:40, display:'flex', flexDirection:'column', gap:12 }}>
+              {features.map(({ Icon, text }) => (
+                <li key={text} style={{ display:'flex', alignItems:'center', gap:12 }}>
+                  <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'var(--accent-light)' }}>
+                    <Icon />
+                  </span>
+                  <span style={{ fontSize:14, color:'#d4d4d8' }}>{text}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA */}
+            <div className="animate-fade-up delay-5" style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
+              <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'DM Sans, sans-serif', boxShadow:'0 8px 30px rgba(99,102,241,0.4)', transition:'transform 0.2s, box-shadow 0.2s' }}
+                onMouseOver={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 12px 40px rgba(99,102,241,0.5)'; }}
+                onMouseOut={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 8px 30px rgba(99,102,241,0.4)'; }}
+              >
+                <Icons.Apple />
+                Download on the App Store
+              </button>
+
+              <button style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid rgba(255,255,255,0.12)', borderRadius:14, padding:'14px 24px', color:'var(--muted)', fontSize:13, fontWeight:400, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+                onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'; }}
+                onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; }}
+                onClick={() => setPage('about')}
+              >
+                See how it works →
+              </button>
+            </div>
+          </div>
+
+          {/* Right – phone */}
+          <div className="animate-fade-in delay-3" style={{ flex:'0 0 auto', display:'flex', flexDirection:'column', alignItems:'center', gap:24 }}>
+            <div className="animate-float">
+              <PhoneMockup screen={activeScreen} />
+            </div>
+            {/* Dots */}
+            <div style={{ display:'flex', gap:8 }}>
+              {screens.map((_, i) => (
+                <button key={i} onClick={() => setActiveScreen(i)} style={{ width:i===activeScreen ? 20 : 6, height:6, borderRadius:3, border:'none', background:i===activeScreen ? 'var(--accent)' : 'rgba(255,255,255,0.2)', cursor:'pointer', transition:'all 0.3s ease' }}/>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ height:1, background:'linear-gradient(90deg, transparent, rgba(99,102,241,0.2), transparent)', margin:'0 clamp(20px,5vw,80px)' }}/>
+
+      <footer style={{ padding:'28px clamp(20px,5vw,80px)', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12, fontSize:12 }}>
+        <span style={{ fontFamily:'DM Serif Display, serif', color:'#52525b' }}>Trace © {new Date().getFullYear()}</span>
+        <div style={{ display:'flex', gap:24 }}>
+          {['about','privacy'].map(p => (
+            <button key={p} onClick={() => setPage(p)} style={{ background:'none', border:'none', cursor:'pointer', color:'#52525b', fontSize:12, textTransform:'capitalize', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s' }}
+              onMouseOver={e => e.currentTarget.style.color='var(--muted)'}
+              onMouseOut={e => e.currentTarget.style.color='#52525b'}
+            >{p}</button>
+          ))}
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ─── About ────────────────────────────────────────────────────────
+function About({ setPage }) {
+  const cards = [
+    {
+      title: 'What is Trace?',
+      body: 'Trace was designed by an avid group of skiers with the goal of helping winter athletes understand what they do on the mountain. Trace tracks your movements and analyzes it, assisting by tracking and analyzing your skiing sessions.',
+    },
+    {
+      title: 'Our Mission',
+      body: 'We believe the best tools disappear into the background. Our mission is to build software that is fast, simple, and genuinely enjoyable to use — software that respects your attention.',
+    },
+    { title: 'Get in Touch', contact: true },
+  ];
+
+  return (
+    <div style={{ minHeight:'100vh', paddingTop:60 }}>
+      <div style={{ maxWidth:640, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
+
+        <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>About</span>
+        </div>
+
+        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:40 }}>
+          Built for people<br/>
+          <em style={{ fontStyle:'italic', color:'var(--accent-light)' }}>who love the mountain.</em>
+        </h1>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+          {cards.map((s, i) => (
+            <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
+              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:18, marginBottom:12, color:'#e4e4e7' }}>{s.title}</h3>
+              {s.body && <p style={{ color:'var(--muted)', lineHeight:1.75, fontSize:14 }}>{s.body}</p>}
+              {s.contact && (
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  <a href="mailto:hello@trace.app" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
+                    <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-light)' }}>
+                      <Icons.Mail />
+                    </span>
+                    hello@trace.app
+                  </a>
+                  <a href="#" style={{ color:'#71717a', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
+                    <span style={{ width:28, height:28, borderRadius:8, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', color:'#71717a' }}>
+                      <Icons.Support />
+                    </span>
+                    Support Center
+                  </a>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'#71717a', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='#71717a'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+          >← Back home</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Privacy ──────────────────────────────────────────────────────
+function Privacy({ setPage }) {
+  const sections = [
+    {
+      title: 'Information We Collect: Location',
+      body: `Trace requires location services in order to keep track of your movement as you ski. All this data is initially only held locally, and is only sent to our database at the end of your day. Our database is securely held by multiple policies in order to keep your data safe, private and unidentifiable.`,
+    },
+    {
+      title: 'Information We Collect: Account Information',
+      body: `Trace also requires an account in order to keep track of your days. The account you create with Trace is held securely within a backend that prioritizes your privacy. Trace will never share your email or password information with third parties. Your account information is also held locally with Apple's Keychain system, which is fully encrypted and only utilized to quickly log you in when opening the app.`,
+    },
+    {
+      title: 'How Information Is Used',
+      body: `Information collected is used solely to improve the app experience. We use anonymized analytics to understand how features are used, crash data to fix bugs faster, and account data to sync your preferences across devices. We do not sell, rent, or share your personal information with third parties for their marketing purposes.`,
+    },
+    {
+      title: 'Data Storage',
+      body: `Your data is stored securely using industry-standard encryption. Local data remains on your device unless you opt into cloud sync. Any data transmitted to our servers is encrypted in transit using TLS and at rest using AES-256.`,
+    },
+    {
+      title: 'Third-Party Services',
+      body: `We may use trusted third-party services to help operate the app, including crash reporting (e.g. Sentry) and anonymized analytics. These services are contractually bound to protect your data and may not use it for any purpose other than helping us operate Trace.`,
+    },
+    {
+      title: 'Contact',
+      body: `For any privacy-related questions or requests, including data deletion, please reach out at privacy@trace.app. We respond to all requests within 72 hours.`,
+    },
+  ];
+
+  return (
+    <div style={{ minHeight:'100vh', paddingTop:60 }}>
+      <div style={{ maxWidth:660, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
+
+        <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Legal</span>
+        </div>
+
+        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,48px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:8 }}>
+          Privacy Policy
+        </h1>
+
+        <p className="animate-fade-up delay-3" style={{ color:'#52525b', fontSize:12, marginBottom:48, borderBottom:'1px solid rgba(255,255,255,0.05)', paddingBottom:24 }}>
+          Last updated: {new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })}
+        </p>
+
+        <div style={{ display:'flex', flexDirection:'column' }}>
+          {sections.map((s, i) => (
+            <div key={i} className={`animate-fade-up delay-${Math.min(i+3,6)}`} style={{ padding:'28px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:17, marginBottom:12, color:'#e4e4e7', display:'flex', alignItems:'center', gap:10 }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--accent)', display:'inline-block', flexShrink:0 }}/>
+                {s.title}
+              </h3>
+              <p style={{ color:'var(--muted)', lineHeight:1.8, fontSize:14, paddingLeft:16 }}>{s.body}</p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop:48, display:'flex', gap:16, flexWrap:'wrap' }}>
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'#71717a', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='#71717a'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+          >← Back home</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Reset Password Page ──────────────────────────────────────────
+// Sole responsibility: receive the Supabase recovery redirect,
+// exchange the token from the URL hash, then deep-link back into the app.
+function ResetPassword() {
+  const [status, setStatus] = useState('loading'); // loading | success | invalid
+
+  useEffect(() => {
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const hash   = window.location.hash;
+    const params = new URLSearchParams(hash.replace('#', '?').slice(1));
+    const type   = params.get('type');
+
+    if (type !== 'recovery') { setStatus('invalid'); return; }
+
+    // Supabase v2 auto-exchanges the hash tokens on client creation.
+    // Listen for PASSWORD_RECOVERY, then deep-link into the app.
+    const { data: { subscription } } = client.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setStatus('success');
+        window.location.href = 'trace://reset-password';
+      }
+    });
+
+    // Fallback: session may already exist if token was exchanged
+    client.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setStatus('success');
+        window.location.href = 'trace://reset-password';
+      } else {
+        setTimeout(() => {
+          client.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+              setStatus('success');
+              window.location.href = 'trace://reset-password';
+            } else {
+              setStatus('invalid');
+            }
+          });
+        }, 2000);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // ── Shared card wrapper ──
+  const Card = ({ children }) => (
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 24px' }}>
+      <div className="animate-fade-up delay-1" style={{ maxWidth:360, width:'100%', textAlign:'center' }}>
+        <div style={{ display:'flex', justifyContent:'center', marginBottom:28 }}>
+          <img src="TraceLogo.png" alt="Trace"
+            style={{ width:52, height:52, borderRadius:16, objectFit:'cover', boxShadow:'0 8px 30px rgba(99,102,241,0.3)' }}
+            onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
+          />
+          <div style={{ display:'none', width:52, height:52, borderRadius:16, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', alignItems:'center', justifyContent:'center', fontSize:24, fontFamily:'DM Serif Display, serif', color:'#fff', boxShadow:'0 8px 30px rgba(99,102,241,0.3)' }}>T</div>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+
+  if (status === 'loading') return (
+    <Card>
+      <div style={{ display:'flex', justifyContent:'center', marginBottom:20 }}>
+        <div style={{ width:36, height:36, border:'2px solid rgba(99,102,241,0.2)', borderTopColor:'var(--accent)', borderRadius:'50%', animation:'spin 0.8s linear infinite' }}/>
+      </div>
+      <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:26, marginBottom:10 }}>Opening Trace…</h2>
+      <p style={{ color:'var(--muted)', fontSize:13, lineHeight:1.7 }}>
+        Verifying your reset link. You'll be redirected to the app in a moment.
+      </p>
+    </Card>
+  );
+
+  if (status === 'success') return (
+    <Card>
+      <div style={{ color:'#4ade80', display:'flex', justifyContent:'center', marginBottom:16 }}><Icons.CheckCircle /></div>
+      <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:26, marginBottom:10 }}>Redirecting to Trace</h2>
+      <p style={{ color:'var(--muted)', fontSize:13, lineHeight:1.7 }}>
+        Link verified. Opening the app now to complete your password reset.
+      </p>
+      <div style={{ marginTop:20, height:2, background:'rgba(255,255,255,0.06)', borderRadius:1, overflow:'hidden' }}>
+        <div style={{ height:'100%', background:'linear-gradient(90deg, var(--accent), var(--accent-light))', borderRadius:1, animation:'progressBar 2s linear forwards' }}/>
+      </div>
+    </Card>
+  );
+
+  // invalid / expired
+  return (
+    <Card>
+      <div style={{ color:'#f87171', display:'flex', justifyContent:'center', marginBottom:16 }}><Icons.AlertCircle /></div>
+      <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:26, marginBottom:10 }}>Link expired</h2>
+      <p style={{ color:'var(--muted)', fontSize:13, lineHeight:1.7, marginBottom:24 }}>
+        This password reset link is invalid or has already been used. Please request a new one from the app.
+      </p>
+      <a href="trace://request-reset" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', color:'#fff', borderRadius:12, padding:'12px 24px', textDecoration:'none', fontSize:13, fontWeight:500, boxShadow:'0 6px 20px rgba(99,102,241,0.35)' }}>
+        Open Trace App
+      </a>
+    </Card>
+  );
+}
+
+// ─── App root ─────────────────────────────────────────────────────
+function App() {
+  // Check if this is the reset-password route via URL path or hash
+  const getInitialPage = () => {
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+    if (path.includes('reset-password') || hash.includes('type=recovery')) return 'reset-password';
+    return 'home';
+  };
+
+  const [page, setPage] = useState(getInitialPage);
+
+  useEffect(() => {
+    if (page !== 'reset-password') {
+      window.scrollTo({ top:0, behavior:'smooth' });
+    }
+  }, [page]);
+
+  return (
+    <>
+      <Nav page={page} setPage={setPage} />
+      {page === 'home'           && <Landing       setPage={setPage} />}
+      {page === 'about'          && <About         setPage={setPage} />}
+      {page === 'privacy'        && <Privacy       setPage={setPage} />}
+      {page === 'reset-password' && <ResetPassword              />}
+
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% { opacity:1; transform:scale(1); }
+          50%       { opacity:0.4; transform:scale(0.8); }
+        }
+        @keyframes shimmer {
+          0%   { background-position:-200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        @media (max-width:700px) {
+          .phone-wrap { order:2; margin-top:40px; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
