@@ -8,9 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-  <!-- Heroicons -->
-  <script src="https://cdn.jsdelivr.net/npm/heroicons@2.1.3/dist/heroicons.min.js"></script>
-  <!-- Supabase (reset-password page only) -->
+  <!-- Supabase (must load before Babel/React scripts execute) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -101,8 +99,8 @@ const { useState, useEffect, useCallback } = React;
 
 // ─── Supabase config ─────────────────────────────────────────────
 // Replace these with your actual Supabase project values
-const SUPABASE_URL    = "https://dhmzjuceuamjvzosdgrx.supabase.co";
-const SUPABASE_ANON   = "sb_publishable_vPluiRRr1l797J2AkfplXg_bWxPcdq4";
+const SUPABASE_URL    = 'https://dhmzjuceuamjvzosdgrx.supabase.co';
+const SUPABASE_ANON   = 'sb_publishable_vPluiRRr1l797J2AkfplXg_bWxPcdq4';
 
 // ─── Heroicons (outline, 24px) ────────────────────────────────────
 // Using raw SVG paths from Heroicons v2 — no build step needed.
@@ -552,41 +550,65 @@ function ResetPassword() {
   useEffect(() => {
     const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+    const search = window.location.search;
     const hash   = window.location.hash;
-    const params = new URLSearchParams(hash.replace('#', '?').slice(1));
-    const type   = params.get('type');
 
-    if (type !== 'recovery') { setStatus('invalid'); return; }
+    const searchParams = new URLSearchParams(search);
+    const hashParams   = new URLSearchParams(hash.replace(/^#/, ''));
 
-    // Supabase v2 auto-exchanges the hash tokens on client creation.
-    // Listen for PASSWORD_RECOVERY, then deep-link into the app.
-    const { data: { subscription } } = client.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setStatus('success');
-        window.location.href = 'trace://reset-password';
-      }
-    });
+    const type  = searchParams.get('type')  || hashParams.get('type');
+    const code  = searchParams.get('code');   // present in PKCE flow
+    const error = searchParams.get('error') || hashParams.get('error');
 
-    // Fallback: session may already exist if token was exchanged
-    client.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setStatus('success');
-        window.location.href = 'trace://reset-password';
-      } else {
+    // Surface any Supabase-level errors immediately (e.g. expired link)
+    if (error) {
+      console.error('Supabase auth error:', error, searchParams.get('error_description'));
+      setStatus('invalid');
+      return;
+    }
+
+    if (!type && !code) {
+      // No recovery signal at all — someone navigated here directly
+      setStatus('invalid');
+      return;
+    }
+
+    const redirect = () => {
+      setStatus('success');
+      // Small delay so the success state renders before the deep-link fires
+      setTimeout(() => { window.location.href = 'trace://reset-password'; }, 800);
+    };
+
+    if (code) {
+      // ── PKCE flow: exchange the code for a session ──────────────
+      // exchangeCodeForSession reads `code` from the current URL automatically
+      client.auth.exchangeCodeForSession(window.location.href)
+        .then(({ error }) => {
+          if (error) { console.error(error); setStatus('invalid'); }
+          else redirect();
+        });
+    } else {
+      // ── Implicit flow: Supabase auto-exchanges the hash tokens ──
+      // Listen for the PASSWORD_RECOVERY event which fires once the
+      // access_token + refresh_token in the hash are exchanged.
+      const { data: { subscription } } = client.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') redirect();
+      });
+
+      // Fallback: session may already exist if client exchanged tokens synchronously
+      client.auth.getSession().then(({ data: { session } }) => {
+        if (session) { redirect(); return; }
+        // Give the async exchange up to 3 s before giving up
         setTimeout(() => {
           client.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-              setStatus('success');
-              window.location.href = 'trace://reset-password';
-            } else {
-              setStatus('invalid');
-            }
+            if (session) redirect();
+            else setStatus('invalid');
           });
-        }, 2000);
-      }
-    });
+        }, 3000);
+      });
 
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    }
   }, []);
 
   // ── Shared card wrapper ──
@@ -647,11 +669,30 @@ function ResetPassword() {
 
 // ─── App root ─────────────────────────────────────────────────────
 function App() {
-  // Check if this is the reset-password route via URL path or hash
+  // Detect recovery redirect from Supabase email link.
+  //
+  // Supabase supports two flows depending on project settings:
+  //   • PKCE  (default in newer projects): ?code=<code>&type=recovery
+  //   • Implicit (legacy):                 #access_token=...&type=recovery
+  //
+  // We check both the query string and the hash fragment so either works.
   const getInitialPage = () => {
-    const path = window.location.pathname;
-    const hash = window.location.hash;
-    if (path.includes('reset-password') || hash.includes('type=recovery')) return 'reset-password';
+    const search = window.location.search;           // e.g. ?code=abc&type=recovery
+    const hash   = window.location.hash;             // e.g. #access_token=...&type=recovery
+
+    const searchParams = new URLSearchParams(search);
+    const hashParams   = new URLSearchParams(hash.replace(/^#/, ''));
+
+    const type  = searchParams.get('type')  || hashParams.get('type');
+    const code  = searchParams.get('code');          // PKCE code
+    const error = searchParams.get('error') || hashParams.get('error');
+
+    // Any recovery signal → show reset page
+    if (type === 'recovery' || code || error) return 'reset-password';
+
+    // Also support an explicit /reset-password path if you ever set up routing
+    if (window.location.pathname.includes('reset-password')) return 'reset-password';
+
     return 'home';
   };
 
