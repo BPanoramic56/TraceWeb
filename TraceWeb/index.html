@@ -340,7 +340,7 @@ function Landing({ setPage }) {
             {/* Badge */}
             <div className="animate-fade-up delay-1" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:100, padding:'5px 14px', marginBottom:28 }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:'var(--accent)', animation:'pulse-dot 2s ease-in-out infinite' }}/>
-              <span style={{ fontSize:11, color:'var(--accent-light)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:500 }}>Coming Soon to the App Store</span>
+              <span style={{ fontSize:11, color:'var(--accent-light)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:500 }}>Live on the App Store</span>
             </div>
 
             <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(38px,5.5vw,72px)', lineHeight:1.05, letterSpacing:'-0.03em', color:'var(--text)', marginBottom:20 }}>
@@ -369,19 +369,21 @@ function Landing({ setPage }) {
             {/* CTA */}
             <div className="animate-fade-up delay-5" style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
               {/*ACTIVATED BUTTON - DON'T USE UNTIL APP IS IN THE STORE*/}
-              {/*<button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'DM Sans, sans-serif', boxShadow:'0 8px 30px rgba(99,102,241,0.4)', transition:'transform 0.2s, box-shadow 0.2s' }}
-                onMouseOver={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 12px 40px rgba(99,102,241,0.5)'; }}
-                onMouseOut={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 8px 30px rgba(99,102,241,0.4)'; }}
-              >
-                <Icons.Apple />
-                Download on the App Store
-              </button>*/}
+              <a href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673">
+                <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'DM Sans, sans-serif', boxShadow:'0 8px 30px rgba(99,102,241,0.4)', transition:'transform 0.2s, box-shadow 0.2s' }}
+                  onMouseOver={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 12px 40px rgba(99,102,241,0.5)'; }}
+                  onMouseOut={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 8px 30px rgba(99,102,241,0.4)'; }}
+                >
+                  <Icons.Apple />
+                  Download on the App Store
+                </button>
+              </a>
 
               {/*DEACTIVATED BUTTON*/}
-              <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--deactivate), var(--deactivate))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'default', fontFamily:'DM Sans, sans-serif'}}>
+              {/* <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--deactivate), var(--deactivate))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'default', fontFamily:'DM Sans, sans-serif'}}>
                 <Icons.Apple />
                 Download on the App Store (Coming Soon)
-              </button>
+              </button> /*}
 
               <button style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid rgba(255,255,255,0.12)', borderRadius:14, padding:'14px 24px', color:'var(--muted)', fontSize:13, fontWeight:400, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
                 onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'; }}
@@ -389,7 +391,7 @@ function Landing({ setPage }) {
                 onClick={() => setPage('about')}
               >
                 See how it works →
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -459,11 +461,11 @@ function About({ setPage }) {
               {s.body && <p style={{ color:'var(--muted)', lineHeight:1.75, fontSize:14 }}>{s.body}</p>}
               {s.contact && (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  <a href="mailto:hello@trace.app" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
+                  <a href="mailto:panoramic56@proton.me" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
                     <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-light)' }}>
                       <Icons.Mail />
                     </span>
-                    hello@trace.app
+                    panoramic56@proton.me
                   </a>
                   <a href="#" style={{ color:'#71717a', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
                     <span style={{ width:28, height:28, borderRadius:8, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', color:'#71717a' }}>
@@ -513,7 +515,7 @@ function Privacy({ setPage }) {
     },
     {
       title: 'Contact',
-      body: `For any privacy-related questions or requests, including data deletion, please reach out at privacy@trace.app. We respond to all requests within 72 hours.`,
+      body: `For any privacy-related questions or requests, including data deletion, please reach out at panoramic56@proton.me. We respond to all requests within 72 hours.`,
     },
   ];
 
