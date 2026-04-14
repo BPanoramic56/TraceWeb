@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <!-- <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='bold' fill='white' text-anchor='middle'%3ET%3C/text%3E%3C/svg%3E"> -->
-  <link rel="icon" href="src/assets/images/TraceMountain.png"/>
+  <link rel="icon" href="src/assets/images/Logos/TraceMountain.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trace</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -21,11 +21,13 @@
       --bg2:          #171717;
       --text:         #ffffff;
       --muted:        #a1a1aa;
-      --accent:       #6366f1;
-      --accent-light: #818cf8;
+      --accent:       #85A8F8;
+      --accent-light: #BACFFB;
+      --accent-dark:  #457dff;
       --deactivate:   #2f2f2f;
       --border:       rgba(255,255,255,0.07);
     }
+    
 
     html { scroll-behavior: smooth; }
 
@@ -42,7 +44,7 @@
 
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--bg2); border-radius: 2px; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(28px); }
@@ -71,6 +73,26 @@
       from { width: 0; }
       to   { width: 100%; }
     }
+    @keyframes pulseBg {
+    0% {
+      background: rgba(255,255,255,0.06);
+    }
+
+    25% {
+      background: var(--accent-dark);
+      transform: scale(1.15);
+    }
+
+    50% {
+      background: rgba(255,255,255,0.06);
+      transform: scale(1);
+    }
+
+    100% {
+      background: rgba(255,255,255,0.06); /* idle hold */
+      transform: scale(1);
+    }
+  }
 
     .animate-fade-up { animation: fadeUp 0.7s ease forwards; }
     .animate-fade-in { animation: fadeIn 0.8s ease forwards; }
@@ -154,102 +176,102 @@ const Icons = {
 
 // ─── Phone mockup screens ─────────────────────────────────────────
 const screens = [
-  {
-    bg: 'linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    accent: '#6366f1', label: 'Dashboard',
-    items: [
-      { w:'60%', h:10, top:18, left:18, opacity:1 },
-      { w:'40%', h:8,  top:36, left:18, opacity:0.5 },
-      { w:'85%', h:56, top:60, left:'7.5%', opacity:1, card:true, accent:'#6366f1' },
-      { w:'38%', h:44, top:130, left:18,   opacity:1, card:true, accent:'#22d3ee' },
-      { w:'38%', h:44, top:130, right:18,  opacity:1, card:true, accent:'#a78bfa' },
-    ]
+  { 
+    label: 'Launch View',
+    src: '/src/assets/images/Screenshots/LaunchView.png',
+    body: "Download now to start Tracing"
   },
-  {
-    bg: 'linear-gradient(145deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
-    accent: '#22d3ee', label: 'Analytics',
-    items: [
-      { w:'55%', h:10,  top:18,  left:18,   opacity:1 },
-      { w:'80%', h:100, top:44,  left:'10%', opacity:1, card:true, accent:'#22d3ee', chart:true },
-      { w:'80%', h:36,  top:158, left:'10%', opacity:1, card:true, accent:'#6366f1' },
-      { w:'80%', h:36,  top:204, left:'10%', opacity:1, card:true, accent:'#f59e0b' },
-    ]
+  { 
+    label: 'Dashboard Page',
+    src: '/src/assets/images/Screenshots/DashboardPage.png',
+    body: "All your sessions in one place"
   },
-  {
-    bg: 'linear-gradient(145deg, #1a0533 0%, #2d1b69 50%, #11052c 100%)',
-    accent: '#a78bfa', label: 'Routes',
-    items: [
-      { w:'45%', h:10,  top:18, left:18,   opacity:1 },
-      { w:'85%', h:180, top:44, left:'7.5%', opacity:1, card:true, accent:'#a78bfa', list:true },
-    ]
+  { 
+    label: 'Session View',
+    src: '/src/assets/images/Screenshots/SessionView.png',
+    body: "See your past sessions, with statistics and tricks"
+  },
+  { 
+    label: 'Record Page',
+    src: '/src/assets/images/Screenshots/RecordPage.png',
+    body: "Start recording at any point, anywhere"
+    },
+  { 
+    label: 'Resorts Page',
+    src: '/src/assets/images/Screenshots/ResortsPage.png',
+    body: "More than 80 available resorts"
+  },
+  { 
+    label: 'Leaderboard Page',
+    src: '/src/assets/images/Screenshots/LeaderboardPage.png',
+    body: "Compete with other skiers"
   }
 ];
-
 function PhoneMockup({ screen = 0 }) {
   const s = screens[screen];
   return (
-    <div style={{
-      width:220, height:460, borderRadius:38,
-      background:'#111',
-      border:'2px solid rgba(255,255,255,0.12)',
-      boxShadow:`0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), 0 0 80px ${s.accent}22`,
-      position:'relative', overflow:'hidden', flexShrink:0,
-    }}>
-      <div style={{ position:'absolute', inset:2, borderRadius:36, background:s.bg, overflow:'hidden' }}>
-        {/* Status bar */}
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px 18px 6px', fontSize:9, color:'rgba(255,255,255,0.6)' }}>
-          <span>9:41</span>
-          <div style={{ display:'flex', gap:4, alignItems:'center' }}>
-            <div style={{ width:12, height:6, border:'1px solid rgba(255,255,255,0.5)', borderRadius:2, position:'relative' }}>
-              <div style={{ position:'absolute', inset:'1px', right:'3px', background:'rgba(255,255,255,0.7)', borderRadius:1 }}/>
-            </div>
-          </div>
-        </div>
-        {s.items.map((item, i) => (
-          <div key={i} style={{
-            position:'absolute',
-            width:item.w, height:item.h,
-            top:item.top,
-            left:item.left !== undefined ? item.left : 'auto',
-            right:item.right !== undefined ? item.right : 'auto',
-            borderRadius:item.card ? 14 : 6,
-            background:item.card
-              ? 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))'
-              : `rgba(255,255,255,${item.opacity * 0.7})`,
-            border:item.card ? '1px solid rgba(255,255,255,0.08)' : 'none',
-            overflow:'hidden',
-          }}>
-            {item.card && item.accent && (
-              <div style={{ position:'absolute', top:10, left:10, width:28, height:28, borderRadius:8, background:`${item.accent}33`, border:`1px solid ${item.accent}55` }}/>
-            )}
-            {item.chart && (
-              <div style={{ position:'absolute', bottom:10, left:10, right:10, display:'flex', alignItems:'flex-end', gap:4, height:50 }}>
-                {[0.4,0.7,0.5,0.9,0.6,0.8,1,0.7].map((h, j) => (
-                  <div key={j} style={{ flex:1, borderRadius:'3px 3px 0 0', height:`${h*100}%`, background: j===6 ? s.accent : `${s.accent}44` }}/>
-                ))}
-              </div>
-            )}
-            {item.list && (
-              <div style={{ padding:'44px 14px 14px', display:'flex', flexDirection:'column', gap:10 }}>
-                {[1,2,3,4].map(j => (
-                  <div key={j} style={{ display:'flex', alignItems:'center', gap:10 }}>
-                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(255,255,255,0.08)', flexShrink:0 }}/>
-                    <div style={{ flex:1 }}>
-                      <div style={{ height:7, background:'rgba(255,255,255,0.4)', borderRadius:4, width:`${60+j*10}%`, marginBottom:4 }}/>
-                      <div style={{ height:5, background:'rgba(255,255,255,0.15)', borderRadius:4, width:'50%' }}/>
-                    </div>
-                    <div style={{ width:16, height:16, borderRadius:4, background:'rgba(255,255,255,0.05)' }}/>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+      
+      {/* Phone frame */}
+      <div style={{
+        width: 220, height: 460, borderRadius: 38,
+        background: 'var(--bg)',
+        border: '2px solid rgba(255,255,255,0.12)',
+        boxShadow: `0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04), 0 0 80px var(--accent-dark)`,
+        position: 'relative', overflow: 'hidden', flexShrink: 0,
+      }}>
+        {/* Screenshot */}
+        <img
+          src={s.src}
+          alt={s.label}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'top',
+            borderRadius: 36,
+          }}
+        />
+        {/* Notch */}
+        <div style={{
+          position: 'absolute', top: 0, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 90, height: 28,
+          background: '#000',
+          borderRadius: '0 0 20px 20px',
+          zIndex: 10,
+        }}/>
+        {/* Home indicator */}
+        <div style={{
+          position: 'absolute', bottom: 8, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 80, height: 4, borderRadius: 2,
+          background: 'rgba(255,255,255,0.35)',
+          zIndex: 10,
+        }}/>
+        {/* Subtle inner border */}
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: 36,
+          border: '1px solid rgba(255,255,255,0.08)',
+          pointerEvents: 'none', zIndex: 11,
+        }}/>
       </div>
-      {/* Notch */}
-      <div style={{ position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', width:90, height:28, background:'#111', borderRadius:'0 0 20px 20px', zIndex:10 }}/>
-      {/* Home indicator */}
-      <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', width:80, height:4, borderRadius:2, background:'rgba(255,255,255,0.25)', zIndex:10 }}/>
+
+      {/* Caption below the phone */}
+      <p style={{
+        color: 'var(--muted)',
+        fontSize: 13,
+        lineHeight: 1.6,
+        textAlign: 'center',
+        maxWidth: 200,
+        margin: 0,
+        transition: 'opacity 0.3s ease',
+      }}>
+        {s.body}
+      </p>
+
     </div>
   );
 }
@@ -279,12 +301,12 @@ function Nav({ page, setPage }) {
       <button onClick={() => setPage('home')} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', alignItems:'center', gap:10 }}>
         <div style={{
           width:30, height:30, borderRadius:8, flexShrink:0,
-          background:'linear-gradient(135deg, #6366f1, #818cf8)',
+          background:'linear-gradient(135deg, #ff0000, #818cf8)',
           display:'flex', alignItems:'center', justifyContent:'center',
           boxShadow:'0 4px 14px rgba(99,102,241,0.4)',
         }}>
           <img
-            src="src/assets/images/TraceMountain.png"
+            src="src/assets/images/Logos/TraceMountain.png"
             alt="Trace logo"
             style={{ width:30, height:30, borderRadius:8, objectFit:'cover', flexShrink:0 }}
           />
@@ -293,7 +315,7 @@ function Nav({ page, setPage }) {
       </button>
 
       <div style={{ display:'flex', gap:32, alignItems:'center' }}>
-        {['about','privacy'].map(p => (
+        {['about','team', 'guide', 'privacy'].map(p => (
           <button key={p} onClick={() => setPage(p)} style={{
             background:'none', border:'none', cursor:'pointer',
             color: page === p ? 'var(--text)' : 'var(--muted)',
@@ -312,14 +334,14 @@ function Nav({ page, setPage }) {
 function Landing({ setPage }) {
   const [activeScreen, setActiveScreen] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setActiveScreen(s => (s+1) % screens.length), 3000);
+    const t = setInterval(() => setActiveScreen(s => (s+1) % screens.length), 5000);
     return () => clearInterval(t);
   }, []);
 
   const features = [
-    { Icon: Icons.Bolt,     text: 'Lightning-fast interface with zero latency' },
-    { Icon: Icons.Sparkle,  text: 'Clean, minimal design that gets out of your way' },
-    { Icon: Icons.Mountain, text: 'Built exclusively for iOS — native and beautiful' },
+    { Icon: Icons.Bolt,     text: 'Fast and easy to use interface' },
+    { Icon: Icons.Sparkle,  text: 'Clean and minimal, just start tracking and let us do the rest' },
+    { Icon: Icons.Mountain, text: 'Built exclusively for iOS' },
   ];
 
   return (
@@ -340,12 +362,12 @@ function Landing({ setPage }) {
             {/* Badge */}
             <div className="animate-fade-up delay-1" style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:100, padding:'5px 14px', marginBottom:28 }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:'var(--accent)', animation:'pulse-dot 2s ease-in-out infinite' }}/>
-              <span style={{ fontSize:11, color:'var(--accent-light)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:500 }}>Live on the App Store</span>
+              <span style={{ fontSize:11, color:'var(--accent-light)', letterSpacing:'0.08em', textTransform:'uppercase', fontWeight:500 }}>Version 0.4 now available</span>
             </div>
 
             <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(38px,5.5vw,72px)', lineHeight:1.05, letterSpacing:'-0.03em', color:'var(--text)', marginBottom:20 }}>
               When Stats<br/>
-              <span style={{ background:'linear-gradient(90deg, #a78bfa, var(--accent-light), var(--accent))', backgroundSize:'200% auto', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', animation:'shimmer 6s linear infinite reverse' }}>
+              <span style={{ background:'linear-gradient(90deg, var(--accent-dark), var(--accent-light), var(--accent))', backgroundSize:'200% auto', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', animation:'shimmer 6s linear infinite reverse' }}>
                 Meet Snow.
               </span>
             </h1>
@@ -361,7 +383,7 @@ function Landing({ setPage }) {
                   <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color:'var(--accent-light)' }}>
                     <Icon />
                   </span>
-                  <span style={{ fontSize:14, color:'#d4d4d8' }}>{text}</span>
+                  <span style={{ fontSize:14, color: 'var(--accent-light)' }}>{text}</span>
                 </li>
               ))}
             </ul>
@@ -369,29 +391,9 @@ function Landing({ setPage }) {
             {/* CTA */}
             <div className="animate-fade-up delay-5" style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
               {/*ACTIVATED BUTTON - DON'T USE UNTIL APP IS IN THE STORE*/}
-              <a href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673">
-                <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--accent), var(--accent-light))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'pointer', fontFamily:'DM Sans, sans-serif', boxShadow:'0 8px 30px rgba(99,102,241,0.4)', transition:'transform 0.2s, box-shadow 0.2s' }}
-                  onMouseOver={e => { e.currentTarget.style.transform='translateY(-4px)'; e.currentTarget.style.boxShadow='0 12px 40px rgba(99,102,241,0.5)'; }}
-                  onMouseOut={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 8px 30px rgba(99,102,241,0.4)'; }}
-                >
-                  <Icons.Apple />
-                  Download on the App Store
-                </button>
-              </a>
-
-              {/*DEACTIVATED BUTTON*/}
-              {/* <button style={{ display:'flex', alignItems:'center', gap:10, background:'linear-gradient(135deg, var(--deactivate), var(--deactivate))', border:'none', borderRadius:14, padding:'14px 28px', color:'#fff', fontSize:14, fontWeight:500, cursor:'default', fontFamily:'DM Sans, sans-serif'}}>
-                <Icons.Apple />
-                Download on the App Store (Coming Soon)
-              </button> /*}
-
-              <button style={{ display:'flex', alignItems:'center', gap:8, background:'transparent', border:'1px solid rgba(255,255,255,0.12)', borderRadius:14, padding:'14px 24px', color:'var(--muted)', fontSize:13, fontWeight:400, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
-                onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.3)'; }}
-                onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.12)'; }}
-                onClick={() => setPage('about')}
-              >
-                See how it works →
-              </button> */}
+              <AppStoreButton href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673" icon={<Icons.Apple />}>
+                Download on the App Store
+              </AppStoreButton>
             </div>
           </div>
 
@@ -409,20 +411,369 @@ function Landing({ setPage }) {
           </div>
         </div>
       </section>
-
-      <div style={{ height:1, background:'linear-gradient(90deg, transparent, rgba(99,102,241,0.2), transparent)', margin:'0 clamp(20px,5vw,80px)' }}/>
+      <div style={{ height:1, background:'linear-gradient(90deg, transparent, var(--accent), transparent)', margin:'0 clamp(20px,5vw,80px)' }}/>
 
       <footer style={{ padding:'28px clamp(20px,5vw,80px)', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12, fontSize:12 }}>
-        <span style={{ fontFamily:'DM Serif Display, serif', color:'#52525b' }}>Trace © {new Date().getFullYear()}</span>
+        <span style={{ fontFamily:'DM Serif Display, serif', color:'var(--muted)' }}>Trace © {new Date().getFullYear()}</span>
         <div style={{ display:'flex', gap:24 }}>
-          {['about','privacy'].map(p => (
-            <button key={p} onClick={() => setPage(p)} style={{ background:'none', border:'none', cursor:'pointer', color:'#52525b', fontSize:12, textTransform:'capitalize', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s' }}
-              onMouseOver={e => e.currentTarget.style.color='var(--muted)'}
-              onMouseOut={e => e.currentTarget.style.color='#52525b'}
+          {['about', 'team', 'guide', 'privacy'].map(p => (
+            <button key={p} onClick={() => setPage(p)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--muted)', fontSize:12, textTransform:'capitalize', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s' }}
+              onMouseOver={e => e.currentTarget.style.color='var(--text)'}
+              onMouseOut={e => e.currentTarget.style.color='var(--muted)'}
             >{p}</button>
           ))}
         </div>
       </footer>
+    </div>
+  );
+}
+
+function AppStoreButton({
+  href,
+  children,
+  icon,
+  style = {},
+  hoverLift = 4
+}) {
+  const baseStyle = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 10,
+    textDecoration: "none",
+    background: "linear-gradient(135deg, var(--accent-dark), var(--accent))",
+    borderRadius: 14,
+    padding: "14px 28px",
+    color: "var(--text)",
+    fontSize: 14,
+    fontWeight: 500,
+    fontFamily: "DM Sans, sans-serif",
+    boxShadow: "0 8px 30px rgba(99,102,241,0.4)",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    cursor: "pointer",
+    marginTop: 10,
+    marginBottom: 5
+  };
+
+  const handleMouseOver = (e) => {
+    e.currentTarget.style.transform = `translateY(-${hoverLift}px)`;
+    e.currentTarget.style.boxShadow = "0 12px 40px rgba(99,102,241,0.5)";
+  };
+
+  const handleMouseOut = (e) => {
+    e.currentTarget.style.transform = "";
+    e.currentTarget.style.boxShadow = "0 8px 30px rgba(99,102,241,0.4)";
+  };
+
+  return (
+    <a
+      href={href}
+      style={baseStyle}
+      onMouseOver={handleMouseOver}
+      onMouseOut={handleMouseOut}
+    >
+      {icon}
+      {children}
+    </a>
+  );
+}
+
+function Team({ setPage }) {
+  const cards = [
+    { 
+    title: 'Aidan Bauer', 
+    image: "/src/assets/images/Headshots/Aidan.png", 
+    linkedin: 'https://www.linkedin.com/in/aidan--bauer/', 
+    github: 'https://github.com/abauer151', 
+    email: "abauer151@gmail.com", 
+    body: 'Hi, my name is Aidan Bauer! I am a senior computer science student at the University of Utah graduating in the spring of 2023. I originally grew up in Dover, New Hampshire. I moved to Utah to pursue my college degree and take advantage of the access to the outdoors in Utah. I got into computer science because of my interest in math, problem solving, technology and programming.\nIn the field of computer science I am particularly interested in algorithms, backend software engineering, databases, and data analysis. Additionally, I am currently working as a computer science tutor at the Kahlert School of Computing. At the Kahlert School of Computing tutoring center I help students understand computer science concepts.\nIn my free time I like to ski, hike, climb, and travel with my friends. After college, I am looking forward to starting a career in software engineering and continuing to travel.' 
+    },
+    {
+      title: 'Brandon Bethel',
+      image: "src/assets/images/Headshots/Brandon.png",
+      linkedin: "https://www.linkedin.com/in/brandon-p-bethel/",
+      github: "https://github.com/Brandon-BPB",
+      email: "branman208@gmail.com",
+      body: "Hi, my name is Brandon, and I am a senior studying Computer Science at the University of Utah. I am currently working toward earning my Bachelor's degree in Computer Science, with a strong academic focus on artificial intelligence and cybersecurity. Through my coursework and personal projects, have developed a growing interest in building secure, scalable systems and exploring how AI can be applied to solve real-world problems.\nFor projects, I'm part of the team developing Trace, and I'm also working on a personal full-stack project where I'm creating a ride-share app like Uber. That project has helped me get more hands-on experience with both frontend and backend development, as well as system design.\nOutside of school, I enjoy golfing and spending time outdoors. I'm also interested in aviation and am considering getting my pilot's license in the future. Im always looking for ways to keep learning and improve my skills, especially through building projects and trying new technologies."
+    },
+    {
+      title: 'Bruno Pascotto',
+      image: "src/assets/images/Headshots/Bruno.png",
+      linkedin: 'https://www.linkedin.com/in/bruno-gomes-pascotto',
+      github: 'https://github.com/BPanoramic56',
+      email: "panoramic56@proton.me",
+      body: 'Hello, I am Bruno, currently a senior at the University of Utah set to graduate in May. I am highy interested in the areas of AI, iOS mobile development and security research such as fuzzing, as well as web development frameworks and backend technologies. Currently I am taking Advanced AI, Applied Software Security and Data Wrangling.\nIn terms of projects, I am mostly focused on the iOS infrastrucutre. Apart from Trace itself, right now I am developing a tool to track AFL++ runs remotely on your phone while away from your computer, as I know those can be lengthy. I am well versed on Swift and SwiftUI, Git and Github, SQL and NoSQL databases such as MongoDB and other programming languagues such as Python and C#.\nOutside of programming, I also enjoy skiing (of course), I am very interested in the aviation industry, and I am a lover of coffee. I am open to help with any project and love connecting with new people, so feel free to email or connect with me.'
+    },
+    { 
+      title: 'Cody Christensen', 
+      image: "src/assets/images/Headshots/Cody.png",
+      linkedin: 'https://www.linkedin.com/in/codychristensenutah',
+      github: ' https://github.com/codyc03', 
+      email: "cody.christensensc17@gmail.com", 
+      body: "Hey! My name is Cody Christensen. I am currently a senior at the University of Utah studying Computer Science, with a double minor in Cognitive Science and FinTech. I'm drawn towards analytical thinking, specializing in backend development, data analysis, and AI tools.\nMy main project affiliations are Trace as well as various school and personal projects, notably a Mental Health Tracker application. I'm a Utah native, born and raised. I went to Corner Canyon high school in Draper, Utah, where I participated in football, soccer, wrestling, and track and field. I played football for the University of Utah during my freshman and sophomore year.\nWhenever I get step away from academics and work, you'll find me outside. I enjoy activities like skiing, rock climbing, mountain biking, hiking, and camping. After college, I am looking for new adventures. I will continue pursuing jobs where I can exercise my logic and analytical thinking to solve complex challenges, learning and growing along the way."
+    }
+  ];
+
+  return (
+    <div style={{ minHeight:'100vh', paddingTop:60 }}>
+      <div style={{ maxWidth:640, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
+
+        <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Team</span>
+        </div>
+
+        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:40 }}>
+          Meet the ones<br/>
+          <em style={{ fontStyle:'italic', color:'var(--accent-light)' }}>behind the system.</em>
+        </h1>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+          {cards.map((s, i) => (
+            <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 12
+              }}
+            >
+                {s.image && (
+                  <img
+                    src={s.image}
+                    alt="Team Image"
+                    style={{ width:200, height:200, borderRadius:8, objectFit:'cover', flexShrink:0 }}
+                  />
+                )}
+
+                <div>
+                  <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:22, marginBottom:12, marginTop: 12, color:'var(--text)' }}>{s.title}</h3>
+
+                {s.email && (
+                  <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                    <a href="mailto:panoramic56@proton.me" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
+                      <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-light)' }}>
+                        <Icons.Mail />
+                      </span>
+                      {s.email}
+                    </a>
+                  </div>
+                )}
+                { s.linkedin && (
+                  <a href={s.linkedin} target="_blank">
+                    <img
+                      src="src/assets/images/Logos/LinkedInLogo.png"
+                      alt="LinkedIn Logo"
+                      style={{ width:30, height:30, borderRadius:4, objectFit:'cover', flexShrink:0, margin: 8}}
+                    />
+                  </a>
+                )}
+                { s.github && (
+                  <a href={s.github} target="_blank">
+                    <img
+                      src="src/assets/images/Logos/GithubLogo.png"
+                      alt="Github Logo"
+                      style={{ width:30, height:30, borderRadius:4, objectFit:'cover', flexShrink:0, margin: 8}}
+                    />
+                  </a>
+                )}
+                </div>
+              </div>
+
+              {s.body &&
+                s.body.split('\n').map((line, i) => (
+                  <p
+                    key={i}
+                    style={{
+                      marginBottom: '12px', // controls space between \n lines
+                      color: 'var(--text)',
+                      fontSize: 16,
+                      lineHeight: 1.75
+                    }}
+                  >
+                    {line}
+                  </p>
+              ))}
+              {
+                <p style={{
+                      color: 'rgba(120, 120, 120, 1)',
+                      fontSize: 8,
+                      lineHeight: 1.75
+                    }}>
+                  {s.body ? s.body.trim().split(/\s+/).filter(Boolean).length : 0} words
+                </p>
+              }
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'var(--muted)', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+          >← Back home</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Guide({ setPage }) {
+
+  const sections = [
+    {
+      title: 'Download the App',
+      body: "Install Trace at the App Store",
+      note: "Trace is available for both iOS and macOS devices, however, we recommend usage only on iOS, as it was specially designed for mobile devices. MacOS usage is available but support is not guaranteed",
+      image: '/src/assets/Symbols/square.and.arrow.down.png',
+      appleLink: true
+    },
+    {
+      title: 'Create an Account',
+      body: "Upon opening the app, you will find the Sign-Up page. Register with an email and password and once you're in, you're ready to Trace.",
+      note: "Trace utilizes the Apple Keychain to save your log-in information, which means you will only have to do so once. After that, Trace will Automatically sign you in. If you want to sign out of Trace, head to the Settings Page and click 'Sign Out'",
+      image: '/src/assets/Symbols/person.badge.plus.png',
+    },
+    {
+      title: 'Record Page',
+      body: "This is your landing page. Start, pause, or stop sessions here and watch rolling statistics update live. A session is made up of individual lines, each one representing one run down the mountain.",
+      note: "While you ski, all recorded points will be shown as one long line. Once you're done, our algorithm will automatically split sections where you are going uphill and downhill",
+      image: '/src/assets/Symbols/record.circle.png'
+    },
+    {
+      title: 'Resorts Page',
+      body: "Browse all Ikon and Epic resorts. Favorite any resort to pin it to the top. Tap a resort to open it on the interactive 3D map, where you can explore lifts and runs.",
+      note: "If a resort is not shown in this page, it will be saved as a 'Unknown Resort' in your Dashboard. Trace does not require you to be on a resort to track your day, it is only an additional convenience feature.",
+      image: '/src/assets/Symbols/mountain.2.png'
+    },
+    {
+      title: 'Dashboard Page',
+      body: "View and filter your completed sessions. Tap any session for a quick summary, then tap the map preview to open your lines on the 3D map, where you can drill into individual lines and view tricks.",
+      note: "Sessions will be uploaded to our database automatically. If Trace was not able to upload a session (e. g. no internet connection), a yellow cloud symbol will appear next to it. You can still see the session normally, and Trace will try uploading that session again in the future, no need to worry about it.",
+      image: '/src/assets/Symbols/list.dash.header.rectangle.png'
+    },
+    {
+      title: 'Leaderboard Page',
+      body: "See all users who have public visibility enabled at each resort. Filter by different stats and switch between resorts to explore rankings",
+      note: "If you don't want to be part of the Leaderboard, head to the Settings Page and toggle 'Show on Leaderboard'.",
+      image: '/src/assets/Symbols/chart.bar.png'
+    },
+    {
+      title: 'Settings Page',
+      body: "You can also change your map style and access the financial analysis page, which shows the average cost of your selected pass and the cost-per-session breakdown, both at pass-included resorts and across all resorts.",
+      note: "\nTip on battery settings: Battery saver reduces location and motion update frequency. Turning off trick tracking stops motion data from being stored, saving additional battery if you're not tracking tricks.",
+      image: '/src/assets/Symbols/gearshape.png'
+    },
+  ]
+
+  return (
+    <div style={{ minHeight:'100vh', paddingTop:60 }}>
+      <div style={{ maxWidth:640, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
+
+        <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Team</span>
+        </div>
+
+        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:40 }}>
+          The easiest way<br/>
+          <em style={{ fontStyle:'italic', color:'var(--accent-light)' }}>to Trace.</em>
+        </h1>
+
+        <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+          {sections.map((s, i) => (
+            <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 12
+              }}
+            >
+              {s.image && (
+                <div
+                style={{
+                  height: '1.8em',
+                  width: '1.8em',
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(255,255,255,0.08)',
+
+                  animation: 'pulseBg 6s ease-in-out infinite',
+                  animationDelay: `${i * 2 + 1}s`
+                }}
+              >
+                <img
+                  src={s.image}
+                  alt="icon"
+                  style={{
+                    height: '1em',
+                    width: '1em',
+                    objectFit: 'contain'
+                  }}
+                />
+              </div>
+              )}
+
+              <h3
+                style={{
+                  fontFamily: 'DM Serif Display, serif',
+                  fontSize: 22,
+                  marginBottom: 4,
+                  color: 'var(--text)'
+                }}
+              >
+                {s.title}
+              </h3>
+            </div>
+
+              {s.body &&
+                s.body.split('\n').map((line, i) => (
+                  <p
+                    key={i}
+                    style={{
+                      marginBottom: '12px', // controls space between \n lines
+                      color: 'var(--text)',
+                      fontSize: 16,
+                      lineHeight: 1.75
+                    }}
+                  >
+                    {line}
+                  </p>
+              ))}
+
+              {s.appleLink && (
+                <AppStoreButton href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673" icon={<Icons.Apple />}>
+                  Download on the App Store
+                </AppStoreButton>
+              )}
+
+              {s.note &&
+                s.note.split('\n').map((line, i) => (
+                  <p
+                    key={i}
+                    style={{
+                      marginBottom: '12px', // controls space between \n lines
+                      color: 'var(--muted)',
+                      fontSize: 16,
+                      lineHeight: 1.75
+                    }}
+                  >
+                    {line}
+                  </p>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'var(--muted)', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+            onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+          >← Back home</button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -457,7 +808,7 @@ function About({ setPage }) {
         <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
           {cards.map((s, i) => (
             <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
-              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:18, marginBottom:12, color:'#e4e4e7' }}>{s.title}</h3>
+              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:18, marginBottom:12, color:'var(--text)' }}>{s.title}</h3>
               {s.body && <p style={{ color:'var(--muted)', lineHeight:1.75, fontSize:14 }}>{s.body}</p>}
               {s.contact && (
                 <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -467,12 +818,6 @@ function About({ setPage }) {
                     </span>
                     panoramic56@proton.me
                   </a>
-                  <a href="#" style={{ color:'#71717a', fontSize:13, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
-                    <span style={{ width:28, height:28, borderRadius:8, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', color:'#71717a' }}>
-                      <Icons.Support />
-                    </span>
-                    Support Center
-                  </a>
                 </div>
               )}
             </div>
@@ -480,9 +825,9 @@ function About({ setPage }) {
         </div>
 
         <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
-          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'#71717a', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'var(--muted)', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
             onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
-            onMouseOut={e => { e.currentTarget.style.color='#71717a'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
           >← Back home</button>
         </div>
       </div>
@@ -507,11 +852,11 @@ function Privacy({ setPage }) {
     },
     {
       title: 'Data Storage',
-      body: `Your data is stored securely using industry-standard encryption. Local data remains on your device unless you opt into cloud sync. Any data transmitted to our servers is encrypted in transit using TLS and at rest using AES-256.`,
+      body: `Your data is stored securely using industry-standard encryption. Local data remains on your device unless you opt into cloud sync. Any data transmitted to our servers is encrypted.`,
     },
     {
       title: 'Third-Party Services',
-      body: `We may use trusted third-party services to help operate the app, including crash reporting (e.g. Sentry) and anonymized analytics. These services are contractually bound to protect your data and may not use it for any purpose other than helping us operate Trace.`,
+      body: `Trace does not send your data to any third-party services`,
     },
     {
       title: 'Contact',
@@ -531,14 +876,14 @@ function Privacy({ setPage }) {
           Privacy Policy
         </h1>
 
-        <p className="animate-fade-up delay-3" style={{ color:'#52525b', fontSize:12, marginBottom:48, borderBottom:'1px solid rgba(255,255,255,0.05)', paddingBottom:24 }}>
-          Last updated: {new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' })}
+        <p className="animate-fade-up delay-3" style={{ color:'var(--muted)', fontSize:12, marginBottom:48, borderBottom:'1px solid rgba(255,255,255,0.05)', paddingBottom:24 }}>
+          Last updated: April 13, 2026
         </p>
 
         <div style={{ display:'flex', flexDirection:'column' }}>
           {sections.map((s, i) => (
             <div key={i} className={`animate-fade-up delay-${Math.min(i+3,6)}`} style={{ padding:'28px 0', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
-              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:17, marginBottom:12, color:'#e4e4e7', display:'flex', alignItems:'center', gap:10 }}>
+              <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:17, marginBottom:12, color:'var(--text)', display:'flex', alignItems:'center', gap:10 }}>
                 <span style={{ width:6, height:6, borderRadius:'50%', background:'var(--accent)', display:'inline-block', flexShrink:0 }}/>
                 {s.title}
               </h3>
@@ -548,9 +893,9 @@ function Privacy({ setPage }) {
         </div>
 
         <div style={{ marginTop:48, display:'flex', gap:16, flexWrap:'wrap' }}>
-          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'#71717a', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
+          <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'var(--muted)', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
             onMouseOver={e => { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; }}
-            onMouseOut={e => { e.currentTarget.style.color='#71717a'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
+            onMouseOut={e => { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; }}
           >← Back home</button>
         </div>
       </div>
@@ -728,6 +1073,8 @@ function App() {
       {page === 'home'           && <Landing       setPage={setPage} />}
       {page === 'about'          && <About         setPage={setPage} />}
       {page === 'privacy'        && <Privacy       setPage={setPage} />}
+      {page === 'team'           && <Team          setPage={setPage} />}
+      {page === 'guide'           && <Guide          setPage={setPage} />}
       {page === 'reset-password' && <ResetPassword              />}
 
       <style>{`
