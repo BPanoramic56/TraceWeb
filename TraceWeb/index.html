@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <!-- <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='bold' fill='white' text-anchor='middle'%3ET%3C/text%3E%3C/svg%3E"> -->
-  <link rel="icon" href="src/assets/images/Logos/TraceMountain.png"/>
+  <link rel="icon" href="assets/images/Logos/TraceMountain.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trace</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -178,32 +178,32 @@ const Icons = {
 const screens = [
   { 
     label: 'Launch View',
-    src: 'src/assets/images/Screenshots/LaunchView.png',
+    src: 'assets/images/Screenshots/LaunchView.png',
     body: "Download now to start Tracing"
   },
   { 
     label: 'Dashboard Page',
-    src: 'src/assets/images/Screenshots/DashboardPage.png',
+    src: 'assets/images/Screenshots/DashboardPage.png',
     body: "All your sessions in one place"
   },
   { 
     label: 'Session View',
-    src: 'src/assets/images/Screenshots/SessionView.png',
+    src: 'assets/images/Screenshots/SessionView.png',
     body: "See your past sessions, with statistics and tricks"
   },
   { 
     label: 'Record Page',
-    src: 'src/assets/images/Screenshots/RecordPage.png',
+    src: 'assets/images/Screenshots/RecordPage.png',
     body: "Start recording at any point, anywhere"
     },
   { 
     label: 'Resorts Page',
-    src: 'src/assets/images/Screenshots/ResortsPage.png',
+    src: 'assets/images/Screenshots/ResortsPage.png',
     body: "More than 80 available resorts"
   },
   { 
     label: 'Leaderboard Page',
-    src: 'src/assets/images/Screenshots/LeaderboardPage.png',
+    src: 'assets/images/Screenshots/LeaderboardPage.png',
     body: "Compete with other skiers"
   }
 ];
@@ -306,7 +306,7 @@ function Nav({ page, setPage }) {
           boxShadow:'0 4px 14px rgba(99,102,241,0.4)',
         }}>
           <img 
-            src="src/assets/images/Logos/TraceMountain.png"
+            src="assets/images/Logos/TraceMountain.png"
             alt="Trace logo"
             style={{ width:30, height:30, borderRadius:8, objectFit:'cover', flexShrink:0 }}
           />
@@ -481,7 +481,7 @@ function Team({ setPage }) {
   const cards = [
     { 
     title: 'Aidan Bauer', 
-    image: "src/assets/images/Headshots/Aidan.png", 
+    image: "assets/images/Headshots/Aidan.png", 
     linkedin: 'https://www.linkedin.com/in/aidan--bauer/', 
     github: 'https://github.com/abauer151', 
     email: "abauer151@gmail.com", 
@@ -489,7 +489,7 @@ function Team({ setPage }) {
     },
     {
       title: 'Brandon Bethel',
-      image: "src/assets/images/Headshots/Brandon.png",
+      image: "assets/images/Headshots/Brandon.png",
       linkedin: "https://www.linkedin.com/in/brandon-p-bethel/",
       github: "https://github.com/Brandon-BPB",
       email: "branman208@gmail.com",
@@ -497,7 +497,7 @@ function Team({ setPage }) {
     },
     {
       title: 'Bruno Pascotto',
-      image: "src/assets/images/Headshots/Bruno.png",
+      image: "assets/images/Headshots/Bruno.png",
       linkedin: 'https://www.linkedin.com/in/bruno-gomes-pascotto',
       github: 'https://github.com/BPanoramic56',
       email: "panoramic56@proton.me",
@@ -505,7 +505,7 @@ function Team({ setPage }) {
     },
     { 
       title: 'Cody Christensen', 
-      image: "src/assets/images/Headshots/Cody.png",
+      image: "assets/images/Headshots/Cody.png",
       linkedin: 'https://www.linkedin.com/in/codychristensenutah',
       github: ' https://github.com/codyc03', 
       email: "cody.christensensc17@gmail.com", 
@@ -561,7 +561,7 @@ function Team({ setPage }) {
                 { s.linkedin && (
                   <a href={s.linkedin} target="_blank">
                     <img
-                      src="src/assets/images/Logos/LinkedInLogo.png"
+                      src="assets/images/Logos/LinkedInLogo.png"
                       alt="LinkedIn Logo"
                       style={{ width:30, height:30, borderRadius:4, objectFit:'cover', flexShrink:0, margin: 8}}
                     />
@@ -570,7 +570,7 @@ function Team({ setPage }) {
                 { s.github && (
                   <a href={s.github} target="_blank">
                     <img
-                      src="src/assets/images/Logos/GithubLogo.png"
+                      src="assets/images/Logos/GithubLogo.png"
                       alt="Github Logo"
                       style={{ width:30, height:30, borderRadius:4, objectFit:'cover', flexShrink:0, margin: 8}}
                     />
@@ -624,44 +624,44 @@ function Guide({ setPage }) {
       title: 'Download the App',
       body: "Install Trace at the App Store",
       note: "Trace is available for both iOS and macOS devices, however, we recommend usage only on iOS, as it was specially designed for mobile devices. MacOS usage is available but support is not guaranteed",
-      image: 'src/assets/Symbols/square.and.arrow.down.png',
+      image: 'assets/Symbols/square.and.arrow.down.png',
       appleLink: true
     },
     {
       title: 'Create an Account',
       body: "Upon opening the app, you will find the Sign-Up page. Register with an email and password and once you're in, you're ready to Trace.",
       note: "Trace utilizes the Apple Keychain to save your log-in information, which means you will only have to do so once. After that, Trace will Automatically sign you in. If you want to sign out of Trace, head to the Settings Page and click 'Sign Out'",
-      image: 'src/assets/Symbols/person.badge.plus.png',
+      image: 'assets/Symbols/person.badge.plus.png',
     },
     {
       title: 'Record Page',
       body: "This is your landing page. Start, pause, or stop sessions here and watch rolling statistics update live. A session is made up of individual lines, each one representing one run down the mountain.",
       note: "While you ski, all recorded points will be shown as one long line. Once you're done, our algorithm will automatically split sections where you are going uphill and downhill",
-      image: 'src/assets/Symbols/record.circle.png'
+      image: 'assets/Symbols/record.circle.png'
     },
     {
       title: 'Resorts Page',
       body: "Browse all Ikon and Epic resorts. Favorite any resort to pin it to the top. Tap a resort to open it on the interactive 3D map, where you can explore lifts and runs.",
       note: "If a resort is not shown in this page, it will be saved as a 'Unknown Resort' in your Dashboard. Trace does not require you to be on a resort to track your day, it is only an additional convenience feature.",
-      image: 'src/assets/Symbols/mountain.2.png'
+      image: 'assets/Symbols/mountain.2.png'
     },
     {
       title: 'Dashboard Page',
       body: "View and filter your completed sessions. Tap any session for a quick summary, then tap the map preview to open your lines on the 3D map, where you can drill into individual lines and view tricks.",
       note: "Sessions will be uploaded to our database automatically. If Trace was not able to upload a session (e. g. no internet connection), a yellow cloud symbol will appear next to it. You can still see the session normally, and Trace will try uploading that session again in the future, no need to worry about it.",
-      image: 'src/assets/Symbols/list.dash.header.rectangle.png'
+      image: 'assets/Symbols/list.dash.header.rectangle.png'
     },
     {
       title: 'Leaderboard Page',
       body: "See all users who have public visibility enabled at each resort. Filter by different stats and switch between resorts to explore rankings",
       note: "If you don't want to be part of the Leaderboard, head to the Settings Page and toggle 'Show on Leaderboard'.",
-      image: 'src/assets/Symbols/chart.bar.png'
+      image: 'assets/Symbols/chart.bar.png'
     },
     {
       title: 'Settings Page',
       body: "You can also change your map style and access the financial analysis page, which shows the average cost of your selected pass and the cost-per-session breakdown, both at pass-included resorts and across all resorts.",
       note: "\nTip on battery settings: Battery saver reduces location and motion update frequency. Turning off trick tracking stops motion data from being stored, saving additional battery if you're not tracking tricks.",
-      image: 'src/assets/Symbols/gearshape.png'
+      image: 'assets/Symbols/gearshape.png'
     },
   ]
 
