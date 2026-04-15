@@ -426,6 +426,17 @@ function Landing({ setPage }) {
       </footer>
     </div>
   );
+
+  const handleMouseOver = (e) => {
+    e.currentTarget.style.transform = `translateY(-${hoverLift}px)`;
+    e.currentTarget.style.boxShadow = "0 12px 40px rgba(99,102,241,0.5)";
+  };
+
+  const handleMouseOut = (e) => {
+    e.currentTarget.style.transform = "";
+    e.currentTarget.style.boxShadow = "0 8px 30px rgba(99,102,241,0.4)";
+  };
+
 }
 
 function AppStoreButton({
@@ -670,7 +681,7 @@ function Guide({ setPage }) {
       <div style={{ maxWidth:640, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
 
         <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
-          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Team</span>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Guide</span>
         </div>
 
         <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:40 }}>
@@ -792,7 +803,14 @@ function About({ setPage }) {
     {
       title: 'Our Tools',
       body: "Trace was built using Swift and SwiftUI, utilizing modern iOS development strategies and frameworks. Location and movement is tracked via the built-in Core Location and Core Motion libraries from Apple. For mapping, we utilize Mapbox, heavily utilized and optimized for our systems. Our backend is composed of an encrypted and secure Supabase instance, where your information sits safely, with no outside access apart from your own requests and additions.",
-      images: ["assets/images/Logos/MapboxLogo.png", "assets/images/Logos/SupabaseLogo.png", "assets/images/Logos/SwiftLogo.png"]
+      images: [ 
+        "assets/images/Logos/SwiftLogo.png",
+        "assets/images/Logos/MapboxLogo.png", 
+        "assets/images/Logos/SupabaseLogo.png",],
+      links: [
+        "https://www.swift.org/",
+        "https://www.mapbox.com/",
+        "https://supabase.com/"]
     },
     { title: 'Get in Touch', contact: true },
   ];
@@ -811,40 +829,48 @@ function About({ setPage }) {
         </h1>
 
         <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
-  {cards.map((s, i) => (
-    <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
-      <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:18, marginBottom:12, color:'var(--text)' }}>{s.title}</h3>
-      {s.body && <p style={{ color:'var(--muted)', lineHeight:1.75, fontSize:14 }}>{s.body}</p>}
+      {cards.map((s, i) => (
+        <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
+          <h3 style={{ fontFamily:'DM Serif Display, serif', fontSize:18, marginBottom:12, color:'var(--text)' }}>{s.title}</h3>
+          {s.body && <p style={{ color:'var(--muted)', lineHeight:1.75, fontSize:14 }}>{s.body}</p>}
 
-      {/* Symbol images */}
-      {s.images && s.images.length > 0 && (
-        <div style={{ display:'flex', gap:10, marginTop:16, flexWrap:'wrap' }}>
-          {s.images.map((src, j) => (
-            <div key={j} style={{
-              width:36, height:36, borderRadius:10,
-              background:'rgba(255,255,255,0.06)',
-              border:'1px solid rgba(255,255,255,0.08)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-            }}>
-              <img src={src} alt="" style={{ width:20, height:20, objectFit:'contain' }} />
+          {/* Symbol images */}
+          {s.images && s.images.length > 0 && (
+            <div style={{ display:'flex', gap:10, marginTop:16, flexWrap:'wrap' }}>
+              {s.images.map((src, j) => (
+                <a href={s.links[j]} style={{ transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer" }}
+                  onMouseOver={ e=> {
+                    e.currentTarget.style.transform = `translateY(-5px)`;
+                    e.currentTarget.style.boxShadow = "0 12px 40px rgba(99,102,241,0.5)";}}
+                  onMouseOut={ e=> {
+                    e.currentTarget.style.transform = `translateY(+5px)`;
+                    e.currentTarget.style.boxShadow = "0 12px 40px rgba(255,255,255,0.06)";}}>
+                  <div key={j} style={{
+                    width:36, height:36, borderRadius:10,
+                    background:'rgba(255,255,255,0.06)',
+                    border:'1px solid rgba(255,255,255,0.08)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>
+                    <img src={src} alt="" style={{ width:20, height:20, objectFit:'contain' }} />
+                  </div>
+                </a>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {s.contact && (
-        <div style={{ display:'flex', flexDirection:'column', gap:10, marginTop:16 }}>
-          <a href="mailto:panoramic56@proton.me" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
-            <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-light)' }}>
-              <Icons.Mail />
-            </span>
-            panoramic56@proton.me
-          </a>
+          {s.contact && (
+            <div style={{ display:'flex', flexDirection:'column', gap:10, marginTop:16 }}>
+              <a href="mailto:panoramic56@proton.me" style={{ color:'var(--accent-light)', fontSize:14, textDecoration:'none', display:'flex', alignItems:'center', gap:10 }}>
+                <span style={{ width:28, height:28, borderRadius:8, background:'rgba(99,102,241,0.12)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--accent-light)' }}>
+                  <Icons.Mail />
+                </span>
+                panoramic56@proton.me
+              </a>
+            </div>
+          )}
         </div>
-      )}
+      ))}
     </div>
-  ))}
-</div>
 
         <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
           <button onClick={() => setPage('home')} style={{ background:'none', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'9px 18px', color:'var(--muted)', fontSize:13, cursor:'pointer', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s, border-color 0.2s' }}
