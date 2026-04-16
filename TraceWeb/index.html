@@ -323,7 +323,7 @@ function Nav({ page, setPage }) {
             letterSpacing:'0.02em', textTransform:'capitalize',
             transition:'color 0.2s', padding:'4px 0',
             borderBottom: page === p ? '1px solid var(--accent)' : '1px solid transparent',
-          }}>{p}</button>
+          }}>{p === 'guide' ? 'User Guide' : p}</button>
         ))}
       </div>
     </nav>
@@ -420,7 +420,7 @@ function Landing({ setPage }) {
             <button key={p} onClick={() => setPage(p)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--muted)', fontSize:12, textTransform:'capitalize', fontFamily:'DM Sans, sans-serif', transition:'color 0.2s' }}
               onMouseOver={e => e.currentTarget.style.color='var(--text)'}
               onMouseOut={e => e.currentTarget.style.color='var(--muted)'}
-            >{p}</button>
+            >{p === 'guide' ? 'User Guide' : p}</button>
           ))}
         </div>
       </footer>
@@ -629,69 +629,173 @@ function Team({ setPage }) {
 }
 
 function Guide({ setPage }) {
+  const [sectionIndex, setSectionIndex] = useState(0);
 
+  // Set photoSrc to a path under assets/ for each step's hero image (e.g. 'assets/guide/download.png').
   const sections = [
     {
       title: 'Download the App',
-      body: "Install Trace at the App Store",
-      note: "Trace is available for both iOS and macOS devices, however, we recommend usage only on iOS, as it was specially designed for mobile devices. MacOS usage is available but support is not guaranteed",
+      body: "Install Trace Via App Store",
+      note: `
+      Trace is available for both iOS and macOS devices. 
+      iOS usage is recommended, as Trace was specially designed for mobile device use. 
+      MacOS support is not guaranteed.
+      `,
       image: 'assets/Symbols/square.and.arrow.down.png',
-      appleLink: true
+      appleLink: true,
+      photoSrc: '',
     },
     {
       title: 'Create an Account',
-      body: "Upon opening the app, you will find the Sign-Up page. Register with an email and password and once you're in, you're ready to Trace.",
-      note: "Trace utilizes the Apple Keychain to save your log-in information, which means you will only have to do so once. After that, Trace will Automatically sign you in. If you want to sign out of Trace, head to the Settings Page and click 'Sign Out'",
+      body: `
+      Opening the app will bring you to the Sign-In page. 
+      Click the 'Sign-Up' button at the bottom of the page to be brought to the Sign-Up page. 
+      Register with an email and password. 
+      Passwords must be at least 8 characters, include an uppercase and lowercase letter, and one number and special character. 
+      Now you're ready to Trace.
+      `,
+      note: `
+      Trace utilizes the Apple Keychain to save your sign-in information.
+      Trace will Automatically sign you in after the initial sign-in. 
+      Sign-out button is located in the Settings Page.
+      `,
       image: 'assets/Symbols/person.badge.plus.png',
+      photoSrc: 'assets/images/Screenshots/SignUpPage.png',
     },
     {
       title: 'Record Page',
-      body: "This is your landing page. Start, pause, or stop sessions here and watch rolling statistics update live. A session is made up of individual lines, each one representing one run down the mountain.",
-      note: "While you ski, all recorded points will be shown as one long line. Once you're done, our algorithm will automatically split sections where you are going uphill and downhill",
-      image: 'assets/Symbols/record.circle.png'
+      body: `
+      This is your landing page. 
+      Start, pause, and stop sessions here.
+      Watch rolling statistics update live for your session. 
+      A session consists of individual lines, where each line represents one run down the mountain.`,
+      note: `
+      While you ski or snowboard, all recorded locations will be shown as one long line. 
+      When you stop your session, our cleaning algorithm will automatically split your session to only include downhill portions.
+      `,
+      image: 'assets/Symbols/record.circle.png',
+      photoSrc: 'assets/images/Screenshots/RecordPage.png',
     },
     {
       title: 'Resorts Page',
-      body: "Browse all Ikon and Epic resorts. Favorite any resort to pin it to the top. Tap a resort to open it on the interactive 3D map, where you can explore lifts and runs.",
-      note: "If a resort is not shown in this page, it will be saved as a 'Unknown Resort' in your Dashboard. Trace does not require you to be on a resort to track your day, it is only an additional convenience feature.",
-      image: 'assets/Symbols/mountain.2.png'
+      body: `
+      Browse all Ikon and Epic resorts. 
+      Favorite (star icon) any resort to pin it to the top of the page. 
+      Click a resort to open it on the interactive 3D map, where you can explore lifts and runs.
+      `,
+      note: `
+      Recording sessions at a resort outside this list or at no resort will store your session with 'Unknown Resort'. 
+      Trace does not require you to be on a supported resort to track your day, it is merely automatically tagged with a resort name if at a valid resort for your convenience.
+      `,
+      image: 'assets/Symbols/mountain.2.png',
+      photoSrc: 'assets/images/Screenshots/ResortsPage.png',
     },
     {
       title: 'Dashboard Page',
-      body: "View and filter your completed sessions. Tap any session for a quick summary, then tap the map preview to open your lines on the 3D map, where you can drill into individual lines and view tricks.",
-      note: "Sessions will be uploaded to our database automatically. If Trace was not able to upload a session (e. g. no internet connection), a yellow cloud symbol will appear next to it. You can still see the session normally, and Trace will try uploading that session again in the future, no need to worry about it.",
-      image: 'assets/Symbols/list.dash.header.rectangle.png'
+      body: `
+      View and filter your completed sessions. 
+      Click any session for a quick summary, then click the map preview to open your lines on the 3D map. 
+      Clicking on an individual line allows you to drill into that line for line-specific statistics and view tricks.",
+      `,
+      note: `
+      Sessions will be uploaded to our database automatically. 
+      If Trace was not able to upload a session (e. g. no internet connection), a yellow cloud symbol will appear next to the session name. 
+      You can still view the session normally.
+      Trace will attempt to upload any unsent sessions repeatedly in the background.
+      `,
+      image: 'assets/Symbols/list.dash.header.rectangle.png',
+      photoSrc: 'assets/images/Screenshots/DashboardPage.png',
     },
     {
       title: 'Leaderboard Page',
-      body: "See all users who have public visibility enabled at each resort. Filter by different stats and switch between resorts to explore rankings",
-      note: "If you don't want to be part of the Leaderboard, head to the Settings Page and toggle 'Show on Leaderboard'.",
-      image: 'assets/Symbols/chart.bar.png'
+      body: `
+      See all users who have public visibility toggled on, filtered by resort. 
+      Filter by different stats and switch between resorts to explore rankings.
+      `,
+      note: `
+      If you don't want to be shown on the Leaderboard, go to the Settings Page and toggle off 'Show on Leaderboard'.
+      `,
+      image: 'assets/Symbols/chart.bar.png',
+      photoSrc: 'assets/images/Screenshots/LeaderboardPage.png',
     },
     {
       title: 'Settings Page',
-      body: "You can also change your map style and access the financial analysis page, which shows the average cost of your selected pass and the cost-per-session breakdown, both at pass-included resorts and across all resorts.",
-      note: "\nTip on battery settings: Battery saver reduces location and motion update frequency. Turning off trick tracking stops motion data from being stored, saving additional battery if you're not tracking tricks.",
-      image: 'assets/Symbols/gearshape.png'
+      body: `
+      Here you can change your map style, access the financial analysis page, and update preferences.
+      The financial analysis page shows the average cost of your selected pass and the cost-per-session breakdown, both at pass-included resorts and across all resorts.
+      `,
+      note: `
+      Turning on battery saver reduces location and motion update frequency. 
+      Turning off trick tracking stops motion data from being stored, saving additional battery if you're not interested in tracking tricks.
+      Turning off geofencing removes shading and resort boundaries displayed on the map.
+      `,
+      image: 'assets/Symbols/gearshape.png',
+      photoSrc: 'assets/images/Screenshots/SettingsPage.png',
     },
-  ]
+  ];
+
+  const total = sections.length;
+  const s = sections[sectionIndex];
+  const canGoPrev = sectionIndex > 0;
+  const canGoNext = sectionIndex < total - 1;
+
+  const guideNavBtnStyle = (enabled) => ({
+    background: 'none',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 10,
+    padding: '9px 18px',
+    color: enabled ? 'var(--muted)' : 'rgba(161,161,170,0.35)',
+    fontSize: 13,
+    cursor: enabled ? 'pointer' : 'not-allowed',
+    fontFamily: 'DM Sans, sans-serif',
+    transition: 'color 0.2s, border-color 0.2s',
+    opacity: enabled ? 1 : 0.5,
+  });
 
   return (
     <div style={{ minHeight:'100vh', paddingTop:60 }}>
       <div style={{ maxWidth:640, margin:'0 auto', padding:'clamp(60px,10vh,120px) clamp(20px,5vw,40px)' }}>
 
         <div className="animate-fade-up delay-1" style={{ marginBottom:12 }}>
-          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>Guide</span>
+          <span style={{ fontSize:11, letterSpacing:'0.1em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500 }}>User Guide</span>
         </div>
 
-        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:40 }}>
+        <h1 className="animate-fade-up delay-2" style={{ fontFamily:'DM Serif Display, serif', fontSize:'clamp(32px,4vw,52px)', letterSpacing:'-0.02em', lineHeight:1.1, marginBottom:14 }}>
           The easiest way<br/>
           <em style={{ fontStyle:'italic', color:'var(--accent-light)' }}>to Trace.</em>
         </h1>
 
+        <p className="animate-fade-up delay-2" style={{ fontSize:14, color:'var(--muted)', lineHeight:1.65, marginBottom:24, maxWidth:520 }}>
+          Follow these steps <strong style={{ color:'var(--text)', fontWeight:500 }}>in order</strong>. Use <strong style={{ color:'var(--text)', fontWeight:500 }}>Next Step</strong> when you are ready to continue, or <strong style={{ color:'var(--text)', fontWeight:500 }}>Previous Step</strong> to go back.
+        </p>
+
+        <div className="animate-fade-up delay-3" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, marginBottom:20, flexWrap:'wrap' }}>
+          <button
+            type="button"
+            disabled={!canGoPrev}
+            onClick={() => canGoPrev && setSectionIndex(sectionIndex - 1)}
+            style={guideNavBtnStyle(canGoPrev)}
+            onMouseOver={e => { if (canGoPrev) { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; } }}
+            onMouseOut={e => { if (canGoPrev) { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; } }}
+          >← Previous Step</button>
+          <div style={{ textAlign:'center', flex:'1 1 auto', minWidth:120 }}>
+            <div style={{ fontSize:10, letterSpacing:'0.12em', textTransform:'uppercase', color:'var(--accent)', fontWeight:500, marginBottom:6 }}>Step</div>
+            <span style={{ fontSize:14, color:'var(--text)', fontWeight:500, letterSpacing:'0.02em' }}>
+              {sectionIndex + 1} of {total}
+            </span>
+          </div>
+          <button
+            type="button"
+            disabled={!canGoNext}
+            onClick={() => canGoNext && setSectionIndex(sectionIndex + 1)}
+            style={guideNavBtnStyle(canGoNext)}
+            onMouseOver={e => { if (canGoNext) { e.currentTarget.style.color='var(--text)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.25)'; } }}
+            onMouseOut={e => { if (canGoNext) { e.currentTarget.style.color='var(--muted)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'; } }}
+          >Next Step →</button>
+        </div>
+
         <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
-          {sections.map((s, i) => (
-            <div key={i} className={`animate-fade-up delay-${i+3}`} style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
+          <div key={sectionIndex} className="animate-fade-up delay-3" style={{ padding:'28px 32px', background:'rgba(255,255,255,0.025)', border:'1px solid var(--border)', borderRadius:18 }}>
             <div
               style={{
                 display: 'flex',
@@ -702,29 +806,28 @@ function Guide({ setPage }) {
             >
               {s.image && (
                 <div
-                style={{
-                  height: '1.8em',
-                  width: '1.8em',
-                  borderRadius: 8,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255,255,255,0.08)',
-
-                  animation: 'pulseBg 6s ease-in-out infinite',
-                  animationDelay: `${i * 2 + 1}s`
-                }}
-              >
-                <img
-                  src={s.image}
-                  alt="icon"
                   style={{
-                    height: '1em',
-                    width: '1em',
-                    objectFit: 'contain'
+                    height: '1.8em',
+                    width: '1.8em',
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255,255,255,0.08)',
+                    animation: 'pulseBg 6s ease-in-out infinite',
+                    animationDelay: `${sectionIndex * 2 + 1}s`
                   }}
-                />
-              </div>
+                >
+                  <img
+                    src={s.image}
+                    alt=""
+                    style={{
+                      height: '1em',
+                      width: '1em',
+                      objectFit: 'contain'
+                    }}
+                  />
+                </div>
               )}
 
               <h3
@@ -739,43 +842,97 @@ function Guide({ setPage }) {
               </h3>
             </div>
 
-              {s.body &&
-                s.body.split('\n').map((line, i) => (
-                  <p
-                    key={i}
-                    style={{
-                      marginBottom: '12px', // controls space between \n lines
-                      color: 'var(--text)',
-                      fontSize: 16,
-                      lineHeight: 1.75
-                    }}
-                  >
-                    {line}
-                  </p>
-              ))}
+            {s.body &&
+              s.body.split('\n').map((line, li) => (
+                <p
+                  key={`b-${li}`}
+                  style={{
+                    marginBottom: '12px',
+                    color: 'var(--text)',
+                    fontSize: 16,
+                    lineHeight: 1.75
+                  }}
+                >
+                  {line}
+                </p>
+            ))}
 
-              {s.appleLink && (
-                <AppStoreButton href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673" icon={<Icons.Apple />}>
-                  Download on the App Store
-                </AppStoreButton>
-              )}
+            {s.appleLink && (
+              <AppStoreButton href="https://apps.apple.com/us/app/trace-ski-snowboard/id6760786673" icon={<Icons.Apple />}>
+                Download on the App Store
+              </AppStoreButton>
+            )}
 
-              {s.note &&
-                s.note.split('\n').map((line, i) => (
-                  <p
-                    key={i}
-                    style={{
-                      marginBottom: '12px', // controls space between \n lines
-                      color: 'var(--muted)',
-                      fontSize: 16,
-                      lineHeight: 1.75
-                    }}
-                  >
-                    {line}
-                  </p>
-              ))}
-            </div>
-          ))}
+            {s.note &&
+              s.note.split('\n').map((line, ni) => (
+                <p
+                  key={`n-${ni}`}
+                  style={{
+                    marginBottom: '12px',
+                    color: 'var(--muted)',
+                    fontSize: 16,
+                    lineHeight: 1.75
+                  }}
+                >
+                  {line}
+                </p>
+            ))}
+          </div>
+
+          {sectionIndex > 0 && (
+          <div
+            key={`guide-photo-${sectionIndex}`}
+            className="animate-fade-up delay-3"
+            style={{
+              borderRadius: 18,
+              border: '1px solid var(--border)',
+              background: 'rgba(255,255,255,0.025)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 12,
+              boxSizing: 'border-box',
+            }}
+          >
+            {s.photoSrc ? (
+              <img
+                src={s.photoSrc}
+                alt={s.title ? `${s.title} — guide` : 'Guide'}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: 'min(75vh, 880px)',
+                  width: 'auto',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  display: 'block',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  minHeight: 240,
+                  boxSizing: 'border-box',
+                  margin: 12,
+                  borderRadius: 12,
+                  border: '1px dashed rgba(255,255,255,0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '16px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.6, maxWidth: 280 }}>
+                  Photo placeholder — set <code style={{ fontSize: 12, color: 'var(--accent-light)' }}>photoSrc</code> on this section in <code style={{ fontSize: 12, color: 'var(--accent-light)' }}>Guide</code> (e.g. <code style={{ fontSize: 12, color: 'var(--accent-light)' }}>assets/guide/…</code>)
+                </span>
+              </div>
+            )}
+          </div>
+          )}
         </div>
 
         <div style={{ marginTop:48, borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:28 }}>
